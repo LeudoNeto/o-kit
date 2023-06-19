@@ -102,6 +102,24 @@ int main(int argc, char** argv) {
         }
         
         /* 2-OPT */
+        for (i = 1; i < dimensao_cidades - 3; i++) {
+            for (j = i+3; j < dimensao_cidades; j++) {
+                copia_array(solucao_vizinha, solucao, dimensao_cidades+1);
+                for (o = 0; o < (j-i+1)/2; o++) {
+                    temp = solucao_vizinha[i+o];
+                    solucao_vizinha[i+o] = solucao_vizinha[j-o];
+                    solucao_vizinha[j-o] = temp;
+                }
+                
+                custo_solucao_vizinha = custo_solucao(solucao_vizinha, dimensao_cidades, distMatrix);
+                
+                if (custo_solucao_vizinha < custo_melhor_solucao) {
+                    copia_array(melhor_solucao, solucao_vizinha, dimensao_cidades+1);
+                    custo_melhor_solucao = custo_solucao_vizinha;
+                    nova_solucao = 1;
+                }
+            }
+        }
         
         /* REINSERTION */
         for (i = 1; i < dimensao_cidades - 1; i++) {
