@@ -195,38 +195,63 @@ int main(int argc, char** argv) {
         printf("Custo da nova solucao: %.2lf\n", custo_melhor_solucao);
 
         /* Se não tiver achado solução nova, mas ainda não tiver tentado uma perturbação, vai perturbar a atual */
-        if (!nova_solucao && !perturbada) {
-            perturbada = 1;
-            copia_array(solucao_final, melhor_solucao, dimensao_cidades+1);
-            custo_solucao_final = custo_melhor_solucao;
-            
-            for (i = dimensao_cidades/3; i < dimensao_cidades/3 + 5; i++) {
-                temp = melhor_solucao[i];
-                melhor_solucao[i] = melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i];
-                melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i] = temp;
+        if (!nova_solucao) {
+            if (!perturbada) {
+                perturbada = 1;
+                copia_array(solucao_final, melhor_solucao, dimensao_cidades+1);
+                custo_solucao_final = custo_melhor_solucao;
+                
+                for (i = dimensao_cidades/3; i < dimensao_cidades/3 + 5; i++) {
+                    temp = melhor_solucao[i];
+                    melhor_solucao[i] = melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i];
+                    melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i] = temp;
+                }
+                
+                custo_melhor_solucao = custo_solucao(melhor_solucao, dimensao_cidades, distMatrix);
+                nova_solucao = 1;
+                
+                printf("Solução perturbada: ");
+                for (i = 0; i < dimensao_cidades; i++) {
+                    printf("%hi -> ", melhor_solucao[i]);
+                }
+                printf("1\n");
+                
+                printf("Custo da solucao perturbada inicial: ");
+                printf("%.2lf\n", custo_melhor_solucao);
             }
-            
-            custo_melhor_solucao = custo_solucao(melhor_solucao, dimensao_cidades, distMatrix);
-            nova_solucao = 1;
-            
-            printf("Solução perturbada: ");
-            for (i = 0; i < dimensao_cidades; i++) {
-                printf("%hi -> ", melhor_solucao[i]);
+            else {
+                printf("Custo da solução antiga: %lf\nCusto da solução perturbada final: %lf\n", custo_solucao_final, custo_melhor_solucao);
+                if (custo_melhor_solucao < custo_solucao_final) {
+                    puts("A solução perturbada foi melhor que a antiga.");
+                    copia_array(solucao_final, melhor_solucao, dimensao_cidades+1);
+                    custo_solucao_final = custo_melhor_solucao;
+                    
+                    for (i = dimensao_cidades/3; i < dimensao_cidades/3 + 5; i++) {
+                        temp = melhor_solucao[i];
+                        melhor_solucao[i] = melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i];
+                        melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i] = temp;
+                    }
+                    
+                    custo_melhor_solucao = custo_solucao(melhor_solucao, dimensao_cidades, distMatrix);
+                    nova_solucao = 1;
+                    
+                    printf("Nova solução perturbada: ");
+                    for (i = 0; i < dimensao_cidades; i++) {
+                        printf("%hi -> ", melhor_solucao[i]);
+                    }
+                    printf("1\n");
+                    
+                    printf("Custo da nova solucao perturbada: ");
+                    printf("%.2lf\n", custo_melhor_solucao);
+                }
+                else {
+                    puts("Solução perturbada não foi melhor que a antiga. Solução final encontrada.");
+                }
             }
-            printf("1\n");
-            
-            printf("Custo da solucao perturbada inicial: ");
-            printf("%.2lf\n", custo_melhor_solucao);
         }
 
     }
     
-    printf("Custo da solução antiga: %lf\nCusto da solução perturbada final: %lf\n", custo_solucao_final, custo_melhor_solucao);
-    if (custo_melhor_solucao < custo_solucao_final) {
-        puts("A solução perturbada foi melhor que a antiga.");
-        copia_array(solucao_final, melhor_solucao, dimensao_cidades+1);
-        custo_solucao_final = custo_melhor_solucao;
-    }
     
     printf("Solução final: ");
     for (i = 0; i < dimensao_cidades; i++) {
