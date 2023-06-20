@@ -23,11 +23,7 @@ void copia_array(short *array_destino, short *array_origem, short size) {
 
 void preenche_sequencia_array(short *array_destino, short *array_origem, short size, short pos_inicial) {
     for (int i = 0; i < size; i++) {
-        puts("começo:");
-        printf("%hi\n", array_origem[i]);
-        printf("%hi\n", array_destino[pos_inicial + i]);
         array_destino[pos_inicial + i] = array_origem[i];
-        puts("fim:");
     }
 }
 
@@ -218,10 +214,10 @@ int main(int argc, char** argv) {
                 }
                 printf("1\n");
 
-                short t1 = (rand() % dimensao_cidades/10) + 2;
-                short t2 = (rand() % dimensao_cidades/10) + 2;
-                short pos1 = (rand() % dimensao_cidades - t1 - t2 - 1) + 1;
-                short pos2 = (rand() % dimensao_cidades - t2 - pos1 - t1) + pos1 + t1;
+                short t1 = rand() % (dimensao_cidades/10) + 2;
+                short t2 = rand() % (dimensao_cidades/10) + 2;
+                short pos1 = rand() % (dimensao_cidades - t1 - t2 - 1) + 1;
+                short pos2 = rand() % (dimensao_cidades - t2 - pos1 - t1) + pos1 + t1;
 
                 printf("%hi %hi %hi %hi\n", t1, t2, pos1, pos2);
 
@@ -238,34 +234,25 @@ int main(int argc, char** argv) {
                 printf("%hi, %hi/n", ar1[0], ar2[0]);
 
                 if (t1 == t2) {
-                    short ar_temp[t1];
-                    copia_array(ar_temp, ar1, t1);
                     preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
-                    preenche_sequencia_array(melhor_solucao, ar_temp, t1, pos2);
+                    preenche_sequencia_array(melhor_solucao, ar1, t1, pos2);
                 }
                 else if (t1 > t2) {
-                    short ar_temp[t1];
-                    short diferenca = t2 - t1;
-                    copia_array(ar_temp, ar1, t1);
+                    short diferenca = t1 - t2;
 
-                    for (i = pos1 + diferenca; i < pos2; i++) {
-                        melhor_solucao[i - diferenca] = melhor_solucao[i];
+                    for (i = pos1 + t2; i < pos2; i++) {
+                        melhor_solucao[i] = melhor_solucao[i + diferenca];
                     }
 
                     preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
-                    preenche_sequencia_array(melhor_solucao, ar1, t1, pos2 - (t1 - t2));
+                    preenche_sequencia_array(melhor_solucao, ar1, t1, pos2-diferenca);
                 }
                 else {
-                    short ar_temp[t2];
                     short diferenca = t2 - t1;
-                    copia_array(ar_temp, ar2, t2);
-
-                    puts("Copiou o array.");
 
                     for (i = pos2 + diferenca - 1; i >= pos1 + t2; i--) {
-                        melhor_solucao[i - diferenca] = melhor_solucao[i];
+                        melhor_solucao[i] = melhor_solucao[i - diferenca];
                     }
-                    puts("Passou os elementos pra esquerda");
 
                     preenche_sequencia_array(melhor_solucao, ar1, t1, pos2 + diferenca);
                     preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
@@ -290,10 +277,54 @@ int main(int argc, char** argv) {
                     copia_array(solucao_final, melhor_solucao, dimensao_cidades+1);
                     custo_solucao_final = custo_melhor_solucao;
                     
-                    for (i = dimensao_cidades/3; i < dimensao_cidades/3 + 5; i++) {
-                        temp = melhor_solucao[i];
-                        melhor_solucao[i] = melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i];
-                        melhor_solucao[dimensao_cidades - dimensao_cidades/5 + i] = temp;
+                    printf("Solução antes de perturbar: ");
+                    for (i = 0; i < dimensao_cidades; i++) {
+                        printf("%hi -> ", melhor_solucao[i]);
+                    }
+                    printf("1\n");
+
+                    short t1 = rand() % (dimensao_cidades/10) + 2;
+                    short t2 = rand() % (dimensao_cidades/10) + 2;
+                    short pos1 = rand() % (dimensao_cidades - t1 - t2 - 1) + 1;
+                    short pos2 = rand() % (dimensao_cidades - t2 - pos1 - t1) + pos1 + t1;
+
+                    printf("%hi %hi %hi %hi\n", t1, t2, pos1, pos2);
+
+                    short ar1[t1], ar2[t2];
+
+                    for (i = 0; i < t1; i++) {
+                        ar1[i] = melhor_solucao[pos1 + i];
+                    }
+
+                    for (i = 0; i < t2; i++) {
+                        ar2[i] = melhor_solucao[pos2 + i];
+                    }
+
+                    printf("%hi, %hi/n", ar1[0], ar2[0]);
+
+                    if (t1 == t2) {
+                        preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
+                        preenche_sequencia_array(melhor_solucao, ar1, t1, pos2);
+                    }
+                    else if (t1 > t2) {
+                        short diferenca = t1 - t2;
+
+                        for (i = pos1 + t2; i < pos2; i++) {
+                            melhor_solucao[i] = melhor_solucao[i + diferenca];
+                        }
+
+                        preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
+                        preenche_sequencia_array(melhor_solucao, ar1, t1, pos2-diferenca);
+                    }
+                    else {
+                        short diferenca = t2 - t1;
+
+                        for (i = pos2 + diferenca - 1; i >= pos1 + t2; i--) {
+                            melhor_solucao[i] = melhor_solucao[i - diferenca];
+                        }
+
+                        preenche_sequencia_array(melhor_solucao, ar1, t1, pos2 + diferenca);
+                        preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
                     }
                     
                     custo_melhor_solucao = custo_solucao(melhor_solucao, dimensao_cidades, distMatrix);
@@ -326,14 +357,6 @@ int main(int argc, char** argv) {
     printf("Custo da solucao: ");
     printf("%.2lf\n", custo_solucao_final);
     printf("Tempo de execução: %.2f\n", (double)(clock() - inicio)/ CLOCKS_PER_SEC);
-
-    double custo = 0;
-    for (short i = 0; i < dimensao_cidades; i++) {
-        printf("Distância %hi -> %hi: %.2lf === ", solucao_final[i], solucao_final[i+1], distMatrix[solucao_final[i]-1][solucao_final[i+1]-1]);
-        custo += distMatrix[solucao_final[i]-1][solucao_final[i+1]-1];
-        printf("Distância total: %.2lf\n", custo);
-    }
-    return custo;
 
     return 0;
 }
