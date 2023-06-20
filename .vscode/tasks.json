@@ -3,11 +3,12 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++ arquivo de build ativo",
-            "command": "/usr/bin/g++",
+            "command": "/usr/bin/g++-11",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
+                "Data.cpp",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
