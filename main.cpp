@@ -27,6 +27,30 @@ void preenche_sequencia_array(short *array_destino, short *array_origem, short s
     }
 }
 
+short InArray(short *array, short num) {
+    for (short i = 0; array[i] ; i++) {
+        if (num == array[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+double custo_insercao(short *sol, double **distMatrix) {
+    double custo = 0;
+    for (short i = 1; sol[i]; i++) {
+        custo += distMatrix[sol[i-1]-1][sol[i]-1];
+    }
+    return custo;
+}
+
+void inserir_cidade(short *sol, short size, short num, short pos) {
+    for (short i = size - 1; i > pos; i--) {
+        sol[i] = sol[i-1];
+    }
+    sol[pos] = num;
+}
+
 int main(int argc, char** argv) {
 
     auto data = Data(argc, argv[1]);
@@ -38,29 +62,40 @@ int main(int argc, char** argv) {
 
     double **distMatrix = data.distMatrix;
 
-    /* Gerando uma solução com início e fim 1, e indíces aleatórios no meio */
-    short solucao[dimensao_cidades+1] = { 1 };
-    solucao[dimensao_cidades] = 1;
+    /* CONSTRUÇÃO */
+    short solucao[dimensao_cidades+1] = { 1, 1 };
     
-    for (i = 1; i < dimensao_cidades; i++) {
-        solucao[i] = i+1;
-    }
+    short sol_insercao[dimensao_cidades+1];
+    float custo_inserido;
+    float menor_custo = INFINITY;
+    short cidade_menor;
+    short pos_cidade_menor;
     
-    
-    for (i = dimensao_cidades-1; i > 1; i--) {
-        srand(time(NULL));
-        
-        j = rand() % (i-1) + 1;
-        temp = solucao[i];
-        solucao[i] = solucao[j];
-        solucao[j] = temp;
+    while (!solucao[dimensao_cidades-1]) {
+        for (i = 2; i <= dimensao_cidades; i++) {
+            if (!InArray(solucao, i)) {
+                for (j = 1; solucao[j]; j++) {
+                    copia_array(sol_insercao, solucao, dimensao_cidades+1);
+                    inserir_cidade(sol_insercao, dimensao_cidades+1, i, j);
+                    custo_inserido = custo_insercao(sol_insercao, distMatrix);
+                    if (custo_inserido < menor_custo) {
+                        menor_custo = custo_inserido;
+                        cidade_menor = i;
+                        pos_cidade_menor = j;
+                    }
+                }
+            }
+        }
+        printf("%hi at %hi, custo %.2lf \n", cidade_menor, pos_cidade_menor, menor_custo);
+        inserir_cidade(solucao, dimensao_cidades+1, cidade_menor, pos_cidade_menor);
+        menor_custo = INFINITY;
     }
     
     printf("Solução inicial: ");
     for (i = 0; i < dimensao_cidades; i++) {
         printf("%hi -> ", solucao[i]);
     }
-    printf("1\n");
+    printf("%hi\n", solucao[dimensao_cidades]);
     
     printf("Custo da solucao: ");
     
