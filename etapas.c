@@ -18,7 +18,7 @@ double custo_insercao(short *sol, double **distMatrix) {
 }
 
 void inserir_cidade(short *sol, short size, short num, short pos) {
-    for (short i = size - 1; i > pos; i--) {
+    for (short i = size; i > pos; i--) {
         sol[i] = sol[i-1];
     }
     sol[pos] = num;
@@ -30,36 +30,92 @@ void preenche_sequencia_array(short *array_destino, short *array_origem, short s
     }
 }
 
-void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
-    short i, j;
-    short sol_insercao[dimensao_cidades+1];
-    float custo_inserido;
-    float menor_custo = INFINITY;
-    short cidade_menor;
-    short pos_cidade_menor;
+// void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
+//     short i, j;
+//     short sol_insercao[dimensao_cidades+1];
+//     float custo_inserido;
+//     float menor_custo = INFINITY;
+//     short cidade_menor;
+//     short pos_cidade_menor;
     
-    while (!solucao[dimensao_cidades]) {
-        for (i = 2; i <= dimensao_cidades; i++) {
-            if (!InArray(solucao, i)) {
-                for (j = 1; solucao[j]; j++) {
-                    copia_array(sol_insercao, solucao, dimensao_cidades+1);
-                    inserir_cidade(sol_insercao, dimensao_cidades+1, i, j);
-                    custo_inserido = custo_insercao(sol_insercao, distMatrix);
-                    if (custo_inserido < menor_custo) {
-                        menor_custo = custo_inserido;
-                        cidade_menor = i;
-                        pos_cidade_menor = j;
-                    }
-                }
-            }
-        }
-        printf("%hi at %hi, custo %.2lf \n", cidade_menor, pos_cidade_menor, menor_custo);
-        inserir_cidade(solucao, dimensao_cidades+1, cidade_menor, pos_cidade_menor);
-        menor_custo = INFINITY;
+//     while (!solucao[dimensao_cidades]) {
+//         for (i = 2; i <= dimensao_cidades; i++) {
+//             if (!InArray(solucao, i)) {
+//                 for (j = 1; solucao[j]; j++) {
+//                     copia_array(sol_insercao, solucao, dimensao_cidades+1);
+//                     inserir_cidade(sol_insercao, dimensao_cidades+1, i, j);
+//                     custo_inserido = custo_insercao(sol_insercao, distMatrix);
+//                     if (custo_inserido < menor_custo) {
+//                         menor_custo = custo_inserido;
+//                         cidade_menor = i;
+//                         pos_cidade_menor = j;
+//                     }
+//                 }
+//             }
+//         }
+//         // printf("%hi at %hi, custo %.2lf \n", cidade_menor, pos_cidade_menor, menor_custo);
+//         inserir_cidade(solucao, dimensao_cidades+1, cidade_menor, pos_cidade_menor);
+//         menor_custo = INFINITY;
+//     }
+// }
+
+// void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
+//     short i, j;
+//     short sol_insercao[dimensao_cidades+1];
+//     float custo_inserido;
+//     float menor_custo = INFINITY;
+//     short pos_cidade_menor;
+
+//     short cidades[dimensao_cidades-1];
+//     for (i = 2; i <= dimensao_cidades; i++) {
+//         cidades[i-2] = i;
+//     }
+
+//     srand(time(NULL));
+//     for (short i = dimensao_cidades-2; i > 0; i--) {
+//         short j = rand() % (i+1);
+        
+//         // Troca os elementos de posição usando uma variável temporária
+//         short temp = cidades[i];
+//         cidades[i] = cidades[j];
+//         cidades[j] = temp;
+//     }
+    
+//     for (i = 2; i <= dimensao_cidades; i++) {
+//         for (j = 1; solucao[j]; j++) {
+//             copia_array(sol_insercao, solucao, dimensao_cidades+1);
+//             inserir_cidade(sol_insercao, dimensao_cidades+1, cidades[i-2], j);
+//             custo_inserido = custo_insercao(sol_insercao, distMatrix);
+//             if (custo_inserido < menor_custo) {
+//                 menor_custo = custo_inserido;
+//                 pos_cidade_menor = j;
+//             }
+//         }
+//         inserir_cidade(solucao, dimensao_cidades+1, cidades[i-2], pos_cidade_menor);
+//         menor_custo = INFINITY;
+//     }
+
+// }
+
+void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
+    solucao[dimensao_cidades] = 1;
+
+    for (int i = 2; i <= dimensao_cidades; i++) {
+        solucao[i-1] = i;
+    }
+
+    srand(time(NULL));
+    for (int i = dimensao_cidades - 1; i > 0; i--) {
+        int j = (rand() % i) + 1;
+        
+        // Troca os elementos de posição usando uma variável temporária
+        int temp = solucao[i];
+        solucao[i] = solucao[j];
+        solucao[j] = temp;
     }
 }
 
-void BuscaLocal(short *solucao, short *melhor_solucao, short dimensao_cidades, double *custo_melhor_solucao, double **distMatrix) {
+void BuscaLocal(short *solucao, short dimensao_cidades, double *custo_solucao_atual, double **distMatrix) {
     bool nova_solucao = 0, continuar = 1;
 
     srand(time(NULL));
@@ -75,31 +131,30 @@ void BuscaLocal(short *solucao, short *melhor_solucao, short dimensao_cidades, d
             ordem[j] = temp;
         }
 
-        printf("%hi %hi %hi %hi %hi\n", ordem[0], ordem[1], ordem[2], ordem[3], ordem[4]);
+        // printf("%hi %hi %hi %hi %hi\n", ordem[0], ordem[1], ordem[2], ordem[3], ordem[4]);
 
         for (short i = 0; i < 5; i++) {
             switch (ordem[i]) {
                 case 1:
-                    nova_solucao = swap(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix);
+                    nova_solucao = swap(solucao, dimensao_cidades, custo_solucao_atual, distMatrix);
                     break;
                 case 2:
-                    nova_solucao = two_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix);
+                    nova_solucao = two_opt(solucao, dimensao_cidades, custo_solucao_atual, distMatrix);
                     break;
                 case 3:
-                    nova_solucao = or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 0);
+                    nova_solucao = or_opt(solucao, dimensao_cidades, custo_solucao_atual, distMatrix, 0);
                     break;
                 case 4:
-                    nova_solucao = or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 1);
+                    nova_solucao = or_opt(solucao, dimensao_cidades, custo_solucao_atual, distMatrix, 1);
                     break;
                 case 5:
-                    nova_solucao = or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 2);
+                    nova_solucao = or_opt(solucao, dimensao_cidades, custo_solucao_atual, distMatrix, 2);
                     break;
             }
 
-            printf("%hi executado e retornou %d\n", ordem[i], nova_solucao);
+            // printf("%hi executado e retornou %d\n", ordem[i], nova_solucao);
 
             if (nova_solucao) {
-                printf("Novo custo: %.2lf\n", *custo_melhor_solucao);
                 continuar = 1;
                 break;
             }
@@ -107,26 +162,7 @@ void BuscaLocal(short *solucao, short *melhor_solucao, short dimensao_cidades, d
 
     }
 
-    puts("Nenhuma fez melhoria.");
-    // /* 1-SWAP */
-    // if (swap(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix))
-    //     nova_solucao = 1;
-    
-    // /* 2-OPT */
-    // if (two_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix))
-    //     nova_solucao = 1;
-    
-    // /* REINSERTION */
-    // if (or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 0))
-    //     nova_solucao = 1;
-    
-    // /* OR-OPT-2 */
-    // if (or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 1))
-    //     nova_solucao = 1;
-    
-    // /* OR-OPT-3 */
-    // if (or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 2))
-    //     nova_solucao = 1;
+    // puts("Nenhuma fez melhoria.");
 }
 
 void Perturbacao(short *melhor_solucao, short dimensao_cidades) {
@@ -137,7 +173,7 @@ void Perturbacao(short *melhor_solucao, short dimensao_cidades) {
     short pos1 = rand() % (dimensao_cidades - t1 - t2 - 1) + 1;
     short pos2 = rand() % (dimensao_cidades - t2 - pos1 - t1) + pos1 + t1;
 
-    printf("%hi %hi %hi %hi\n", t1, t2, pos1, pos2);
+    // printf("%hi %hi %hi %hi\n", t1, t2, pos1, pos2);
 
     short ar1[t1], ar2[t2];
 
@@ -149,7 +185,7 @@ void Perturbacao(short *melhor_solucao, short dimensao_cidades) {
         ar2[i] = melhor_solucao[pos2 + i];
     }
 
-    printf("%hi, %hi/n", ar1[0], ar2[0]);
+    // printf("%hi, %hi/n", ar1[0], ar2[0]);
 
     if (t1 == t2) {
         preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);

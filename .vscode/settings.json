@@ -4,6 +4,7 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "utility": "cpp",
-        "etapas.c": "cpp"
+        "etapas.c": "cpp",
+        "random": "cpp"
     }
 }
