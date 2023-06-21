@@ -14,7 +14,7 @@ void copia_array(short *array_destino, short *array_origem, short size) {
     }
 }
 
-bool swap(short *solucao, short *melhor_solucao, short dimensao_cidades, double custo_melhor_solucao, double **distMatrix) {
+bool swap(short *solucao, short *melhor_solucao, short dimensao_cidades, double *custo_melhor_solucao, double **distMatrix) {
     short i, j;
     short solucao_vizinha[dimensao_cidades+1];
     double custo_solucao_vizinha;
@@ -29,9 +29,9 @@ bool swap(short *solucao, short *melhor_solucao, short dimensao_cidades, double 
             solucao_vizinha[j] = temp;
 
             custo_solucao_vizinha = custo_solucao(solucao_vizinha, dimensao_cidades, distMatrix);
-            if (custo_solucao_vizinha < custo_melhor_solucao) {
+            if (custo_solucao_vizinha < *custo_melhor_solucao) {
                 copia_array(melhor_solucao, solucao_vizinha, dimensao_cidades+1);
-                custo_melhor_solucao = custo_solucao_vizinha;
+                *custo_melhor_solucao = custo_solucao_vizinha;
                 nova_solucao = 1;
             }
 
@@ -40,7 +40,7 @@ bool swap(short *solucao, short *melhor_solucao, short dimensao_cidades, double 
     return nova_solucao;
 }
 
-bool two_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, double custo_melhor_solucao, double **distMatrix) {
+bool two_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, double *custo_melhor_solucao, double **distMatrix) {
     short i, j, temp, o;
     short solucao_vizinha[dimensao_cidades+1];
     double custo_solucao_vizinha;
@@ -57,9 +57,9 @@ bool two_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, doub
 
             custo_solucao_vizinha = custo_solucao(solucao_vizinha, dimensao_cidades, distMatrix);
             
-            if (custo_solucao_vizinha < custo_melhor_solucao) {
+            if (custo_solucao_vizinha < *custo_melhor_solucao) {
                 copia_array(melhor_solucao, solucao_vizinha, dimensao_cidades+1);
-                custo_melhor_solucao = custo_solucao_vizinha;
+                *custo_melhor_solucao = custo_solucao_vizinha;
                 nova_solucao = 1;
             }
         }
@@ -67,7 +67,7 @@ bool two_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, doub
     return nova_solucao;
 }
 
-bool or_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, double custo_melhor_solucao, double **distMatrix, short opt_type) {
+bool or_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, double *custo_melhor_solucao, double **distMatrix, short opt_type) {
     short i, j, temp, o;
     short solucao_vizinha[dimensao_cidades+1];
     double custo_solucao_vizinha;
@@ -92,9 +92,9 @@ bool or_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, doubl
             
             custo_solucao_vizinha = custo_solucao(solucao_vizinha, dimensao_cidades, distMatrix);
             
-            if (custo_solucao_vizinha < custo_melhor_solucao) {
+            if (custo_solucao_vizinha < *custo_melhor_solucao) {
                 copia_array(melhor_solucao, solucao_vizinha, dimensao_cidades+1);
-                custo_melhor_solucao = custo_solucao_vizinha;
+                *custo_melhor_solucao = custo_solucao_vizinha;
                 nova_solucao = 1;
             }
         }
