@@ -7,12 +7,6 @@
 
 using namespace std;
 
-// void preenche_sequencia_array(short *array_destino, short *array_origem, short size, short pos_inicial) {
-//     for (int i = 0; i < size; i++) {
-//         array_destino[pos_inicial + i] = array_origem[i];
-//     }
-// }
-
 int main(int argc, char** argv) {
 
     auto data = Data(argc, argv[1]);
@@ -54,32 +48,35 @@ int main(int argc, char** argv) {
     
     short solucao_final[dimensao_cidades+1];
     double custo_solucao_final;
+
+    // BuscaLocal(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix);
+    printf("Custo da nova solucao: %.2lf\n", custo_melhor_solucao);
     while(nova_solucao) {
         nova_solucao = 0;
         copia_array(solucao, melhor_solucao, dimensao_cidades+1);
         custo_solucao_atual = custo_melhor_solucao;
         
-        srand(time(NULL));
         
-        /* 1-SWAP */
-        if (swap(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix))
-            nova_solucao = 1;
+        BuscaLocal(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix);
+        // /* 1-SWAP */
+        // if (swap(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix))
+        //     nova_solucao = 1;
         
-        /* 2-OPT */
-        if (two_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix))
-            nova_solucao = 1;
+        // /* 2-OPT */
+        // if (two_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix))
+        //     nova_solucao = 1;
         
-        /* REINSERTION */
-        if (or_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix, 0))
-            nova_solucao = 1;
+        // /* REINSERTION */
+        // if (or_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix, 0))
+        //     nova_solucao = 1;
         
-        /* OR-OPT-2 */
-        if (or_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix, 1))
-            nova_solucao = 1;
+        // /* OR-OPT-2 */
+        // if (or_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix, 1))
+        //     nova_solucao = 1;
         
-        /* OR-OPT-3 */
-        if (or_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix, 2))
-            nova_solucao = 1;
+        // /* OR-OPT-3 */
+        // if (or_opt(solucao, melhor_solucao, dimensao_cidades, &custo_melhor_solucao, distMatrix, 2))
+        //     nova_solucao = 1;
 
         /* printf("Custo solucao vizinha: %lf, Custo solucao atual: %lf\n", custo_solucao_vizinha, custo_melhor_solucao); */
         

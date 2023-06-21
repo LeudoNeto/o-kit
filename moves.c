@@ -18,7 +18,7 @@ bool swap(short *solucao, short *melhor_solucao, short dimensao_cidades, double 
     short i, j;
     short solucao_vizinha[dimensao_cidades+1];
     double custo_solucao_vizinha;
-    bool nova_solucao;
+    bool nova_solucao = 0;
 
     for (i = 1; i < dimensao_cidades; i++) {
         for (j = i+1; j < dimensao_cidades; j++) {
@@ -44,7 +44,7 @@ bool two_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, doub
     short i, j, temp, o;
     short solucao_vizinha[dimensao_cidades+1];
     double custo_solucao_vizinha;
-    bool nova_solucao;
+    bool nova_solucao = 0;
 
     for (i = 1; i < dimensao_cidades - 3; i++) {
         for (j = i+3; j < dimensao_cidades; j++) {
@@ -71,7 +71,7 @@ bool or_opt(short *solucao, short *melhor_solucao, short dimensao_cidades, doubl
     short i, j, temp, o;
     short solucao_vizinha[dimensao_cidades+1];
     double custo_solucao_vizinha;
-    bool nova_solucao;
+    bool nova_solucao = 0;
 
     for (i = 1; i < dimensao_cidades - (1 + 2*opt_type); i++) {
         for (j = i+1; j < dimensao_cidades-opt_type; j++) {

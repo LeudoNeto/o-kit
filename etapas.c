@@ -59,6 +59,76 @@ void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
     }
 }
 
+void BuscaLocal(short *solucao, short *melhor_solucao, short dimensao_cidades, double *custo_melhor_solucao, double **distMatrix) {
+    bool nova_solucao = 0, continuar = 1;
+
+    srand(time(NULL));
+    while(continuar) {
+        continuar = 0;
+        short ordem[5] = {1, 2, 3, 4, 5};
+
+        // Randomiza a ordem das funções
+        for (short i = 4; i > 0; i--) {
+            short j = rand() % (i + 1);
+            short temp = ordem[i];
+            ordem[i] = ordem[j];
+            ordem[j] = temp;
+        }
+
+        printf("%hi %hi %hi %hi %hi\n", ordem[0], ordem[1], ordem[2], ordem[3], ordem[4]);
+
+        for (short i = 0; i < 5; i++) {
+            switch (ordem[i]) {
+                case 1:
+                    nova_solucao = swap(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix);
+                    break;
+                case 2:
+                    nova_solucao = two_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix);
+                    break;
+                case 3:
+                    nova_solucao = or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 0);
+                    break;
+                case 4:
+                    nova_solucao = or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 1);
+                    break;
+                case 5:
+                    nova_solucao = or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 2);
+                    break;
+            }
+
+            printf("%hi executado e retornou %d\n", ordem[i], nova_solucao);
+
+            if (nova_solucao) {
+                printf("Novo custo: %.2lf\n", *custo_melhor_solucao);
+                continuar = 1;
+                break;
+            }
+        }
+
+    }
+
+    puts("Nenhuma fez melhoria.");
+    // /* 1-SWAP */
+    // if (swap(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix))
+    //     nova_solucao = 1;
+    
+    // /* 2-OPT */
+    // if (two_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix))
+    //     nova_solucao = 1;
+    
+    // /* REINSERTION */
+    // if (or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 0))
+    //     nova_solucao = 1;
+    
+    // /* OR-OPT-2 */
+    // if (or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 1))
+    //     nova_solucao = 1;
+    
+    // /* OR-OPT-3 */
+    // if (or_opt(solucao, melhor_solucao, dimensao_cidades, custo_melhor_solucao, distMatrix, 2))
+    //     nova_solucao = 1;
+}
+
 void Perturbacao(short *melhor_solucao, short dimensao_cidades) {
     short i;
 
