@@ -1,4 +1,5 @@
 #include "moves.c"
+#include <math.h>
 
 bool InArray(short *array, short num) {
     for (short i = 0; array[i] ; i++) {
@@ -9,13 +10,6 @@ bool InArray(short *array, short num) {
     return 0;
 }
 
-// double custo_insercao(short *sol, double **distMatrix) {
-//     double custo = 0;
-//     for (short i = 1; sol[i]; i++) {
-//         custo += distMatrix[sol[i-1]-1][sol[i]-1];
-//     }
-//     return custo;
-// }
 
 void inserir_cidade(short *sol, short size, short num, short pos) {
     for (short i = size; i > pos; i--) {
@@ -28,6 +22,9 @@ void inserir3aleatorios(short *solucao, short dimensao_cidades) {
     short i = 3;
     while(i--) {
         short aleatorio = (rand() % (dimensao_cidades - 2)) + 2;
+        while (InArray(solucao, aleatorio)) {
+            aleatorio = (rand() % (dimensao_cidades - 2)) + 2;
+        }
         inserir_cidade(solucao, dimensao_cidades+1, aleatorio, 1);
     }
 }
@@ -56,7 +53,7 @@ InsertionInfo custo_insercao(short *sol, short num, short index, double **distMa
     return insercao;
 }
 
-void ordernarCustosInsercao(InsertionInfo *custos, short size) {
+void ordenarCustosInsercao(InsertionInfo *custos, short size) {
     double menor_custo;
     short pos_menor;
     int i, j;
@@ -64,10 +61,11 @@ void ordernarCustosInsercao(InsertionInfo *custos, short size) {
 
     for (i = 0; i < size-1; i++) {
         pos_menor = i;
-        menor_custo = custos[i];
+        menor_custo = custos[i].custo_insercao;
         for (j = i+1; j < size; j++) {
-            if (custos[j] < menor_custo) {
+            if (custos[j].custo_insercao < menor_custo) {
                 pos_menor = j;
+                menor_custo = custos[j].custo_insercao;
             }
         }
         if (pos_menor != i) {
@@ -80,7 +78,7 @@ void ordernarCustosInsercao(InsertionInfo *custos, short size) {
 }
 
 void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
-    short i, j;
+    short i, j, o;
     int l, selecionado;
     short sol_insercao[dimensao_cidades+1];
     float custo_inserido;
@@ -88,10 +86,9 @@ void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
     short cidade_menor;
     short pos_cidade_menor;
     double alpha;
-    int tamanho_array_custos = TAMANHO;
+    int tamanho_array_custos = dimensao_cidades*dimensao_cidades;
 
-    srand(time(NULL));
-    inserir3aleatorios(solucao);
+    inserir3aleatorios(solucao, dimensao_cidades);
 
     while(!solucao[dimensao_cidades]) {
         l = 0;
@@ -105,103 +102,17 @@ void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
                 }
             }
         }
-        ordernarCustosInsercao(custos, tamanho_array_custos);
+        ordenarCustosInsercao(custos, l);
         alpha = (double) rand() / RAND_MAX;
-        selecionado = rand() % ((int) ceil(alpha * tamanho_array_custos));
+        selecionado = rand() % ((int) ceil(alpha * l));
         inserir_cidade(solucao, dimensao_cidades+1, custos[selecionado].cidade_insercao, custos[selecionado].index_insercao);
     }
     
 }
 
-// void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
-//     short i, j;
-//     short sol_insercao[dimensao_cidades+1];
-//     float custo_inserido;
-//     float menor_custo = INFINITY;
-//     short cidade_menor;
-//     short pos_cidade_menor;
-    
-//     while (!solucao[dimensao_cidades]) {
-//         for (i = 2; i <= dimensao_cidades; i++) {
-//             if (!InArray(solucao, i)) {
-//                 for (j = 1; solucao[j]; j++) {
-//                     copia_array(sol_insercao, solucao, dimensao_cidades+1);
-//                     inserir_cidade(sol_insercao, dimensao_cidades+1, i, j);
-//                     custo_inserido = custo_insercao(sol_insercao, distMatrix);
-//                     if (custo_inserido < menor_custo) {
-//                         menor_custo = custo_inserido;
-//                         cidade_menor = i;
-//                         pos_cidade_menor = j;
-//                     }
-//                 }
-//             }
-//         }
-//         // printf("%hi at %hi, custo %.2lf \n", cidade_menor, pos_cidade_menor, menor_custo);
-//         inserir_cidade(solucao, dimensao_cidades+1, cidade_menor, pos_cidade_menor);
-//         menor_custo = INFINITY;
-//     }
-// }
-
-// void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
-//     short i, j;
-//     short sol_insercao[dimensao_cidades+1];
-//     float custo_inserido;
-//     float menor_custo = INFINITY;
-//     short pos_cidade_menor;
-
-//     short cidades[dimensao_cidades-1];
-//     for (i = 2; i <= dimensao_cidades; i++) {
-//         cidades[i-2] = i;
-//     }
-
-//     srand(time(NULL));
-//     for (short i = dimensao_cidades-2; i > 0; i--) {
-//         short j = rand() % (i+1);
-        
-//         // Troca os elementos de posição usando uma variável temporária
-//         short temp = cidades[i];
-//         cidades[i] = cidades[j];
-//         cidades[j] = temp;
-//     }
-    
-//     for (i = 2; i <= dimensao_cidades; i++) {
-//         for (j = 1; solucao[j]; j++) {
-//             copia_array(sol_insercao, solucao, dimensao_cidades+1);
-//             inserir_cidade(sol_insercao, dimensao_cidades+1, cidades[i-2], j);
-//             custo_inserido = custo_insercao(sol_insercao, distMatrix);
-//             if (custo_inserido < menor_custo) {
-//                 menor_custo = custo_inserido;
-//                 pos_cidade_menor = j;
-//             }
-//         }
-//         inserir_cidade(solucao, dimensao_cidades+1, cidades[i-2], pos_cidade_menor);
-//         menor_custo = INFINITY;
-//     }
-
-// }
-
-void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
-    solucao[dimensao_cidades] = 1;
-
-    for (int i = 2; i <= dimensao_cidades; i++) {
-        solucao[i-1] = i;
-    }
-
-    srand(time(NULL));
-    for (int i = dimensao_cidades - 1; i > 0; i--) {
-        int j = (rand() % i) + 1;
-        
-        // Troca os elementos de posição usando uma variável temporária
-        int temp = solucao[i];
-        solucao[i] = solucao[j];
-        solucao[j] = temp;
-    }
-}
-
 void BuscaLocal(short *solucao, short dimensao_cidades, double *custo_solucao_atual, double **distMatrix) {
     bool nova_solucao = 0, continuar = 1;
 
-    srand(time(NULL));
     while(continuar) {
         continuar = 0;
         short ordem[5] = {1, 2, 3, 4, 5};
@@ -213,8 +124,6 @@ void BuscaLocal(short *solucao, short dimensao_cidades, double *custo_solucao_at
             ordem[i] = ordem[j];
             ordem[j] = temp;
         }
-
-        // printf("%hi %hi %hi %hi %hi\n", ordem[0], ordem[1], ordem[2], ordem[3], ordem[4]);
 
         for (short i = 0; i < 5; i++) {
             switch (ordem[i]) {
@@ -235,8 +144,6 @@ void BuscaLocal(short *solucao, short dimensao_cidades, double *custo_solucao_at
                     break;
             }
 
-            // printf("%hi executado e retornou %d\n", ordem[i], nova_solucao);
-
             if (nova_solucao) {
                 continuar = 1;
                 break;
@@ -245,10 +152,9 @@ void BuscaLocal(short *solucao, short dimensao_cidades, double *custo_solucao_at
 
     }
 
-    // puts("Nenhuma fez melhoria.");
 }
 
-void Perturbacao(short *melhor_solucao, short dimensao_cidades) {
+void Perturbacao(short *sol, short dimensao_cidades) {
     short i;
 
     short t1 = rand() % (dimensao_cidades/10) + 2;
@@ -261,37 +167,37 @@ void Perturbacao(short *melhor_solucao, short dimensao_cidades) {
     short ar1[t1], ar2[t2];
 
     for (i = 0; i < t1; i++) {
-        ar1[i] = melhor_solucao[pos1 + i];
+        ar1[i] = sol[pos1 + i];
     }
 
     for (i = 0; i < t2; i++) {
-        ar2[i] = melhor_solucao[pos2 + i];
+        ar2[i] = sol[pos2 + i];
     }
 
     // printf("%hi, %hi/n", ar1[0], ar2[0]);
 
     if (t1 == t2) {
-        preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
-        preenche_sequencia_array(melhor_solucao, ar1, t1, pos2);
+        preenche_sequencia_array(sol, ar2, t2, pos1);
+        preenche_sequencia_array(sol, ar1, t1, pos2);
     }
     else if (t1 > t2) {
         short diferenca = t1 - t2;
 
         for (i = pos1 + t2; i < pos2; i++) {
-            melhor_solucao[i] = melhor_solucao[i + diferenca];
+            sol[i] = sol[i + diferenca];
         }
 
-        preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
-        preenche_sequencia_array(melhor_solucao, ar1, t1, pos2-diferenca);
+        preenche_sequencia_array(sol, ar2, t2, pos1);
+        preenche_sequencia_array(sol, ar1, t1, pos2-diferenca);
     }
     else {
         short diferenca = t2 - t1;
 
         for (i = pos2 + diferenca - 1; i >= pos1 + t2; i--) {
-            melhor_solucao[i] = melhor_solucao[i - diferenca];
+            sol[i] = sol[i - diferenca];
         }
 
-        preenche_sequencia_array(melhor_solucao, ar1, t1, pos2 + diferenca);
-        preenche_sequencia_array(melhor_solucao, ar2, t2, pos1);
+        preenche_sequencia_array(sol, ar1, t1, pos2 + diferenca);
+        preenche_sequencia_array(sol, ar2, t2, pos1);
     }
 }

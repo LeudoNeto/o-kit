@@ -5,8 +5,8 @@
 #include <iostream>
 #include "etapas.c"
 
-#define maxIter 10
-#define maxIterILS 250
+#define maxIter 5
+#define maxIterILS 5
 
 using namespace std;
 
@@ -30,13 +30,13 @@ int main(int argc, char** argv) {
 
         double custo_solucao_atual = custo_solucao(solucao, dimensao_cidades, distMatrix);
 
-        printf("Solução inicial: ");
-        for (int o = 0; o < dimensao_cidades; o++) {
-            printf("%hi -> ", solucao[o]);
-        }
-        printf("%hi\n", solucao[dimensao_cidades]);
+        // printf("Solução inicial: ");
+        // for (int o = 0; o < dimensao_cidades; o++) {
+        //     printf("%hi -> ", solucao[o]);
+        // }
+        // printf("%hi\n", solucao[dimensao_cidades]);
         
-        printf("Custo da solucao: %.2lf\n", custo_solucao_atual);
+        // printf("Custo da solucao: %.2lf\n", custo_solucao_atual);
 
         short melhor_solucao[dimensao_cidades+1];
         copia_array(melhor_solucao, solucao, dimensao_cidades+1);
@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
                 custo_solucao_atual = custo_melhor_solucao;
             }
             Perturbacao(solucao, dimensao_cidades);
+            custo_solucao_atual = custo_solucao(solucao, dimensao_cidades, distMatrix);
             iterILS++;
         }
 
