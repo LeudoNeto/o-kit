@@ -6,7 +6,7 @@
 #include "etapas.c"
 
 #define maxIter 5
-#define maxIterILS 5
+#define maxIterILS 500
 
 using namespace std;
 
@@ -23,20 +23,25 @@ int main(int argc, char** argv) {
 
     short solucao_final[dimensao_cidades+1];
     double custo_solucao_final = INFINITY;
+
+    srand(time(NULL));
     
     for (int i = 0; i < maxIter; i++) {
         short solucao[dimensao_cidades+1] = { 1, 1 };
+
         Construcao(solucao, dimensao_cidades, distMatrix);
 
         double custo_solucao_atual = custo_solucao(solucao, dimensao_cidades, distMatrix);
 
-        // printf("Solução inicial: ");
-        // for (int o = 0; o < dimensao_cidades; o++) {
-        //     printf("%hi -> ", solucao[o]);
-        // }
-        // printf("%hi\n", solucao[dimensao_cidades]);
+        printf("Solução inicial: ");
+        for (int o = 0; o < dimensao_cidades; o++) {
+            printf("%hi -> ", solucao[o]);
+        }
+        printf("%hi\n", solucao[dimensao_cidades]);
         
-        // printf("Custo da solucao: %.2lf\n", custo_solucao_atual);
+        printf("Custo da solucao: %.2lf\n", custo_solucao_atual);
+
+        printf("Terminou a construcao: %.2f\n", (double)(clock() - inicio)/ CLOCKS_PER_SEC);
 
         short melhor_solucao[dimensao_cidades+1];
         copia_array(melhor_solucao, solucao, dimensao_cidades+1);

@@ -86,15 +86,24 @@ void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
     short cidade_menor;
     short pos_cidade_menor;
     double alpha;
-    int tamanho_array_custos = dimensao_cidades*dimensao_cidades;
+    int tamanho_array_custos = dimensao_cidades*dimensao_cidades/4 + 1;
+
+    short c_restantes[dimensao_cidades];
+    for (i = 1; i <= dimensao_cidades; i++) {
+        c_restantes[i-1] = i;
+    }
 
     inserir3aleatorios(solucao, dimensao_cidades);
+    
+    for (i = 0; i < 5; i++) {
+        c_restantes[solucao[i]-1] = 0;
+    }
 
     while(!solucao[dimensao_cidades]) {
         l = 0;
         InsertionInfo custos[tamanho_array_custos];
         for (i = 2; i <= dimensao_cidades; i++) {
-            if (!InArray(solucao, i)) {
+            if (c_restantes[i-1]) {
                 for (j = 1; solucao[j] && j < dimensao_cidades; j++) {
                     InsertionInfo insercao_info = custo_insercao(solucao, i, j, distMatrix);
                     custos[l] = insercao_info;
@@ -106,6 +115,7 @@ void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
         alpha = (double) rand() / RAND_MAX;
         selecionado = rand() % ((int) ceil(alpha * l));
         inserir_cidade(solucao, dimensao_cidades+1, custos[selecionado].cidade_insercao, custos[selecionado].index_insercao);
+        c_restantes[custos[selecionado].cidade_insercao - 1] = 0;
     }
     
 }
