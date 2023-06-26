@@ -5,8 +5,8 @@
 #include <iostream>
 #include "etapas.c"
 
-#define maxIter 5
-#define maxIterILS 500
+#define maxIter 50
+#define maxIterILS 50
 
 using namespace std;
 

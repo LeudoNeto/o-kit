@@ -1,5 +1,6 @@
 #include "moves.c"
 #include <math.h>
+#include <stdlib.h>
 
 bool InArray(short *array, short num) {
     for (short i = 0; array[i] ; i++) {
@@ -53,28 +54,63 @@ InsertionInfo custo_insercao(short *sol, short num, short index, double **distMa
     return insercao;
 }
 
-void ordenarCustosInsercao(InsertionInfo *custos, short size) {
-    double menor_custo;
-    short pos_menor;
-    int i, j;
-    InsertionInfo temp;
+void merge(InsertionInfo *custos, int left, int middle, int right) {
+    int i, j, k;
+    int n1 = middle - left + 1;
+    int n2 = right - middle;
 
-    for (i = 0; i < size-1; i++) {
-        pos_menor = i;
-        menor_custo = custos[i].custo_insercao;
-        for (j = i+1; j < size; j++) {
-            if (custos[j].custo_insercao < menor_custo) {
-                pos_menor = j;
-                menor_custo = custos[j].custo_insercao;
-            }
+    InsertionInfo *leftArr = (InsertionInfo *) malloc(n1 * sizeof(InsertionInfo));
+    InsertionInfo *rightArr = (InsertionInfo *) malloc(n2 * sizeof(InsertionInfo));
+
+    for (i = 0; i < n1; i++)
+        leftArr[i] = custos[left + i];
+    for (j = 0; j < n2; j++)
+        rightArr[j] = custos[middle + 1 + j];
+
+    i = 0;
+    j = 0;
+    k = left;
+    while (i < n1 && j < n2) {
+        if (leftArr[i].custo_insercao <= rightArr[j].custo_insercao) {
+            custos[k] = leftArr[i];
+            i++;
+        } else {
+            custos[k] = rightArr[j];
+            j++;
         }
-        if (pos_menor != i) {
-            temp = custos[i];
-            custos[i] = custos[pos_menor];
-            custos[pos_menor] = temp;
-        }
+        k++;
     }
 
+    while (i < n1) {
+        custos[k] = leftArr[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        custos[k] = rightArr[j];
+        j++;
+        k++;
+    }
+
+    free(leftArr);
+    free(rightArr);
+}
+
+void mergeSort(InsertionInfo *custos, int left, int right) {
+    if (left < right) {
+        int middle = left + (right - left) / 2;
+
+        mergeSort(custos, left, middle);
+
+        mergeSort(custos, middle + 1, right);
+
+        merge(custos, left, middle, right);
+    }
+}
+
+void ordenarCustosInsercao(InsertionInfo *custos, short size) {
+    mergeSort(custos, 0, size - 1);
 }
 
 void Construcao(short *solucao, short dimensao_cidades, double **distMatrix) {
