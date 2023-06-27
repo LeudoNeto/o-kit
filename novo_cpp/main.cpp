@@ -7,11 +7,23 @@
 
 using namespace std;
 
-Solution ILS(int maxIter, int maxIterILS, int dimensao_cidades, double **distMatrix) {
+Solution ILS(int maxIter, int maxIterILS, int dimensao_cidades, double **c) {
     Solution solucao_final;
     solucao_final.cost = INFINITY;
     for (int i = 0; i < maxIter; i++) {
-        Solution solucao = Construcao(dimensao_cidades, distMatrix);
+        Solution solucao = Construcao(dimensao_cidades, c);
+        Solution melhor_solucao = solucao;
+
+        int iterILS = 0;
+        while (iterILS < maxIterILS) {
+            BuscaLocal(solucao, c);
+            if (solucao.cost < melhor_solucao.cost) {
+                melhor_solucao = solucao;
+                iterILS = 0;
+            }
+            iterILS++;
+        }
+
     }
     return solucao_final;
 }

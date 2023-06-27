@@ -1,11 +1,4 @@
 #include "moves.cpp"
-#include <stdio.h>
-#include <algorithm>
-
-struct Solution {
-    double cost;
-    std::vector<int> sequence;
-};
 
 struct InsertionInfo {
     int num;
@@ -13,7 +6,7 @@ struct InsertionInfo {
     double custo;
 };
 
-Solution escolhe3aleatorios(int dimensao_cidades) {
+Solution escolhe3aleatorios(int dimensao_cidades, double **c) {
     Solution solucao;
     solucao.sequence.push_back(1);  // Adiciona o valor inicial
 
@@ -26,6 +19,10 @@ Solution escolhe3aleatorios(int dimensao_cidades) {
     }
     
     solucao.sequence.push_back(1);  // Adiciona o valor final
+
+    for (int i = 0; i < 4; i++) {
+        solucao.cost += c[solucao.sequence[i]-1][solucao.sequence[i+1]-1];
+    }
 
     return solucao;
 }
@@ -72,7 +69,7 @@ void ordenarCustos(std::vector<InsertionInfo>& custos) {
 
 Solution Construcao(int dimensao_cidades, double **c) {
     Solution solucao;
-    solucao = escolhe3aleatorios(dimensao_cidades);
+    solucao = escolhe3aleatorios(dimensao_cidades, c);
     std::vector<int> CL = nos_restantes(solucao, dimensao_cidades);
 
     while (!CL.empty()) {
@@ -81,8 +78,58 @@ Solution Construcao(int dimensao_cidades, double **c) {
         double alfa = (double) rand() / RAND_MAX;
         int aleatorio = rand() % ((int) ceil(alfa * custos.size()));
         solucao.sequence.insert(solucao.sequence.begin() + custos[aleatorio].index + 1, custos[aleatorio].num);
+        solucao.cost += custos[aleatorio].custo;
         CL.erase(std::find(CL.begin(), CL.end(), custos[aleatorio].num));
     }
 
     return solucao;
+}
+
+void BuscaLocal(Solution& s, double **c) {
+    std::vector<int> NL = {1, 2, 3, 4, 5};
+    bool melhorou = false;
+    int n;
+
+    while(!NL.empty()) {
+        n = rand() % NL.size();
+        switch (NL[n]) {
+            case 1:
+            // cout << "Sequencia antes do swap: ";
+            // for (int i = 0; i < s.sequence.size(); i++) {
+            //     cout << s.sequence[i] << " ";
+            // }
+            // cout << endl;
+            // cout << "Custo da sequencia: " << s.cost << endl;
+
+                melhorou = swap(s, c);
+                
+
+            // cout << "Sequencia depois do swap: ";
+            // for (int i = 0; i < s.sequence.size(); i++) {
+            //     cout << s.sequence[i] << " ";
+            // }
+            // cout << endl;
+            // cout << "Custo da sequencia: " << s.cost << endl;
+            // s.sequence[3233223] = 3;
+                break;
+            case 2:
+                melhorou = two_opt(s, c);
+                break;
+            case 3:
+                melhorou = or_opt(s, c, 1);
+                break;
+            case 4:
+                melhorou = or_opt(s, c, 2);
+                break;
+            case 5:
+                melhorou = or_opt(s, c, 3);
+                break;
+        }
+        if (melhorou) {
+            NL = {1, 2, 3, 4, 5};
+        }
+        else {
+            NL.erase(NL.begin() + n);
+        }
+    }
 }
