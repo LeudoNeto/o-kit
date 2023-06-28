@@ -129,6 +129,8 @@ Solution Perturbacao(Solution s, double **c) {
     int pos1 = rand() % (s.sequence.size() - 1 - t1 - t2 - 1) + 1;
     int pos2 = rand() % (s.sequence.size() - 1 - t2 - pos1 - t1) + pos1 + t1;
 
+    // cout << t1 << " " << t2 << " " << pos1 << " " << pos2 << endl;
+
     std::vector<int> subseq1(s.sequence.begin() + pos1, s.sequence.begin() + pos1 + t1);
     std::vector<int> subseq2(s.sequence.begin() + pos2, s.sequence.begin() + pos2 + t2);
     std::vector<int> aux;
@@ -141,10 +143,49 @@ Solution Perturbacao(Solution s, double **c) {
 
     s.sequence = aux;
 
+    // cout << "Subsequencia 1: ";
+    // for (int i = 0; i < subseq1.size(); i++) {
+    //     cout << subseq1[i] << " ";
+    // }
+    // cout << endl;
+
+    // cout << "Subsequencia 2: ";
+    // for (int i = 0; i < subseq2.size(); i++) {
+    //     cout << subseq2[i] << " ";
+    // }
+    // cout << endl;
+
+    // s.sequence.erase(s.sequence.begin() + pos1, s.sequence.begin() + pos1 + t1);
+    // s.sequence.erase(s.sequence.begin() + pos2 - t1, s.sequence.begin() + pos2 - t1 + t2);
+
+    // cout << "Solucao sem subsequencias: ";
+    // for (int i = 0; i < s.sequence.size(); i++) {
+    //     cout << s.sequence[i] << " ";
+    // }
+    // cout << endl;
+
+    // s.sequence.insert(s.sequence.begin() + pos1, subseq2.begin(), subseq2.end());
+    // cout << "Solucao com subsequencia 2: ";
+    // for (int i = 0; i < s.sequence.size(); i++) {
+    //     cout << s.sequence[i] << " ";
+    // }
+    // cout << endl;
+    // cout << "Tamanho sequencia atual: " << s.sequence.size() << endl;
+
+    // s.sequence.insert(s.sequence.begin() + pos2, subseq1.begin(), subseq1.end());
+
+    // cout << "Solucao perturbada: ";
+    // for (int i = 0; i < s.sequence.size(); i++) {
+    //     cout << s.sequence[i] << " ";
+    // }
+    // cout << endl;
+
     s.cost = 0;
     for (int i = 0; i < s.sequence.size() - 1; i++) {
         s.cost += c[s.sequence[i]-1][s.sequence[i+1]-1];
     }
+
+    // cout << "Custo da solucao perturbada: " << s.cost << endl;
 
     return s;
 }

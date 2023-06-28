@@ -21,9 +21,12 @@ Solution ILS(int maxIter, int maxIterILS, int dimensao_cidades, double **c) {
                 melhor_solucao = solucao;
                 iterILS = 0;
             }
+            solucao = Perturbacao(melhor_solucao, c);
             iterILS++;
         }
-
+        if (melhor_solucao.cost < solucao_final.cost) {
+            solucao_final = melhor_solucao;
+        }
     }
     return solucao_final;
 }
@@ -52,6 +55,7 @@ int main(int argc, char** argv) {
     }
     std::cout << std::endl;
 
+    cout << "Custo final: " << solucao_final.cost << endl;
 
 
     return 0;    
